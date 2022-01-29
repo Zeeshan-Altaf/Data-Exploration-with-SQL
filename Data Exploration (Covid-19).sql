@@ -13,14 +13,14 @@ WHERE  continent IS NOT NULL  -- As some data in location column is not correct 
 
 SELECT   location,
          date,
-	     total_cases,
-	     new_cases,
-	     total_deaths,
-	     population
+	 total_cases,
+	 new_cases,
+	 total_deaths,
+	 population
 FROM     coviddeaths
 WHERE    continent IS NOT NULL
 ORDER BY location,
-		 date
+         date
 
 -- 3.
 -- Looking at total cases vs total deaths
@@ -28,13 +28,13 @@ ORDER BY location,
 
 SELECT   location,
          date,
-	     total_cases,
-	     total_deaths,
-	     ROUND((total_deaths/total_cases)*100,2) AS 'Death Percentage'
+	 total_cases,
+	 total_deaths,
+	 ROUND((total_deaths/total_cases)*100,2) AS 'Death Percentage'
 FROM     coviddeaths
 WHERE    continent IS NOT NULL
 ORDER BY location,
-		 date
+         date
 
 -- 4.
 -- Looking at the death percentage of Pakistan
@@ -43,12 +43,12 @@ ORDER BY location,
 
 SELECT   location,
          date,
-		-- new_cases,
-		-- new_deaths,
-		-- CASE WHEN new_cases != 0 THEN ROUND((new_deaths/new_cases)*100,2) ELSE '' END AS 'Daily Death Percentage',
-	     total_cases,
-	     total_deaths,
-	     (total_deaths/total_cases)*100 AS 'Total Death Percentage'
+         -- new_cases,
+	 -- new_deaths,
+	 -- CASE WHEN new_cases != 0 THEN ROUND((new_deaths/new_cases)*100,2) ELSE '' END AS 'Daily Death Percentage',
+	 total_cases,
+	 total_deaths,
+	 (total_deaths/total_cases)*100 AS 'Total Death Percentage'
 FROM     coviddeaths
 WHERE    continent IS NOT NULL
 AND      location = 'Pakistan'
@@ -61,9 +61,9 @@ AND      location = 'Pakistan'
 
 SELECT   location,
          date,
-		 population,
-	     total_cases,
-	     (total_cases/population)*100 AS 'Percent Population Infected'
+         population,
+	 total_cases,
+	 (total_cases/population)*100 AS 'Percent Population Infected'
 FROM     coviddeaths
 WHERE    continent IS NOT NULL
 -- WHERE    location = 'Pakistan'
@@ -75,13 +75,13 @@ ORDER BY location,
 
 
 SELECT   location,
-		 population,
-	     MAX (total_cases) AS 'Highest Infection Count',
-	     MAX (total_cases/population)*100 AS 'Percent Population Infected'
+         population,
+	 MAX (total_cases) AS 'Highest Infection Count',
+	 MAX (total_cases/population)*100 AS 'Percent Population Infected'
 FROM     coviddeaths
 WHERE    continent IS NOT NULL
 GROUP BY location,
-		 population
+         population
 ORDER BY 'Percent Population Infected' DESC
 
 -- 7.
@@ -89,8 +89,8 @@ ORDER BY 'Percent Population Infected' DESC
 
 
 SELECT   location,
-	     MAX (CAST (total_deaths AS INT)) AS 'Highest Death Count'
-	    -- MAX (total_deaths/population)*100 AS 'Percent Population Died'
+	 MAX (CAST (total_deaths AS INT)) AS 'Highest Death Count'
+	 -- MAX (total_deaths/population)*100 AS 'Percent Population Died'
 FROM     coviddeaths
 WHERE    continent IS NOT NULL
 GROUP BY location
@@ -101,8 +101,8 @@ ORDER BY 'Highest Death Count' DESC
 
 
 SELECT   continent,
-	     MAX (CAST (total_deaths AS INT)) AS 'Total Death Count'
-	    -- MAX (total_deaths/population)*100 AS 'Percent Population Died'
+	 MAX (CAST (total_deaths AS INT)) AS 'Total Death Count'
+	 -- MAX (total_deaths/population)*100 AS 'Percent Population Died'
 FROM     coviddeaths
 WHERE    continent IS NOT NULL
 GROUP BY continent
@@ -112,13 +112,13 @@ ORDER BY 'Total Death Count' DESC
 -- Global numbers
 
 
-SELECT  --date,
-         SUM (new_cases)  AS 'Total Cases',
-	     SUM (CAST (new_deaths AS INT)) AS 'Total Deaths',
-		 SUM (CAST (new_deaths AS INT))/SUM (new_cases)*100 AS 'Death Percentage'
-FROM     coviddeaths
+SELECT --date,
+       SUM (new_cases)  AS 'Total Cases',
+       SUM (CAST (new_deaths AS INT)) AS 'Total Deaths',
+       SUM (CAST (new_deaths AS INT))/SUM (new_cases)*100 AS 'Death Percentage'
+FROM   coviddeaths
 --WHERE    new_cases != 0
-WHERE     continent IS NOT NULL
+WHERE  continent IS NOT NULL
 --GROUP BY date
 --ORDER BY date
 
@@ -126,13 +126,13 @@ WHERE     continent IS NOT NULL
 -- Global numbers per day
 
 
-SELECT  date,
+SELECT   date,
          SUM (new_cases)  AS 'Total Cases',
-	     SUM (CAST (new_deaths AS INT)) AS 'Total Deaths',
-		 SUM (CAST (new_deaths AS INT))/SUM (new_cases)*100 AS 'Death Percentage'
+	 SUM (CAST (new_deaths AS INT)) AS 'Total Deaths',
+         SUM (CAST (new_deaths AS INT))/SUM (new_cases)*100 AS 'Death Percentage'
 FROM     coviddeaths
 --WHERE    new_cases != 0
-WHERE      continent IS NOT NULL
+WHERE    continent IS NOT NULL
 GROUP BY date
 ORDER BY date
 
@@ -153,8 +153,8 @@ ORDER BY cd.date
 SELECT   cd.continent,
          cd.location,
          cd.date,
-		 cd.population,
-		 cv.new_vaccinations
+         cd.population,
+	 cv.new_vaccinations
 FROM     coviddeaths cd 
 JOIN     covidvaccination cv ON cd.location = cv.location
 AND                             cd.date = cv.date
@@ -169,10 +169,10 @@ ORDER BY cd.location,
 SELECT   cd.continent,
          cd.location,
          cd.date,
-		 cd.population,
-		 cv.new_vaccinations,
-		 SUM (CONVERT (BIGINT, cv.new_vaccinations)) OVER (PARTITION BY cd.location 
-		                                                   ORDER BY     cd.location, cd.date) AS 'Rolling People Vaccinated'
+         cd.population,
+         cv.new_vaccinations,
+         SUM (CONVERT (BIGINT, cv.new_vaccinations)) OVER (PARTITION BY cd.location 
+		                                           ORDER BY     cd.location, cd.date) AS 'Rolling People Vaccinated'
 FROM     coviddeaths cd 
 JOIN     covidvaccination cv ON cd.location = cv.location
 AND                             cd.date = cv.date
@@ -187,9 +187,9 @@ ORDER BY cd.location,
 WITH PopvsVac (continent,
                location,
                date,
-		       population,
-		       new_vaccinations,
-			   RollingPeopleVaccinated)
+	       population,
+	       new_vaccinations,
+	       RollingPeopleVaccinated)
 AS
 (
 SELECT   cd.continent,
@@ -228,10 +228,10 @@ INSERT INTO #PercentPopulationVaccinated
 SELECT   cd.continent,
          cd.location,
          cd.date,
-		 cd.population,
-		 cv.new_vaccinations,
-		 SUM (CONVERT (BIGINT, cv.new_vaccinations)) OVER (PARTITION BY cd.location 
-		                                                   ORDER BY     cd.location, cd.date) AS 'RollingPeopleVaccinated'
+         cd.population,
+	 cv.new_vaccinations,
+         SUM (CONVERT (BIGINT, cv.new_vaccinations)) OVER (PARTITION BY cd.location 
+		                                           ORDER BY     cd.location, cd.date) AS 'RollingPeopleVaccinated'
 FROM     coviddeaths cd 
 JOIN     covidvaccination cv ON cd.location = cv.location
 AND                             cd.date = cv.date
@@ -252,10 +252,10 @@ AS
 SELECT   cd.continent,
          cd.location,
          cd.date,
-		 cd.population,
-		 cv.new_vaccinations,
-		 SUM (CONVERT (BIGINT, cv.new_vaccinations)) OVER (PARTITION BY cd.location 
-		                                                   ORDER BY     cd.location, cd.date) AS 'RollingPeopleVaccinated'
+         cd.population,
+         cv.new_vaccinations,
+         SUM (CONVERT (BIGINT, cv.new_vaccinations)) OVER (PARTITION BY cd.location 
+		                                           ORDER BY     cd.location, cd.date) AS 'RollingPeopleVaccinated'
 FROM     coviddeaths cd 
 JOIN     covidvaccination cv ON cd.location = cv.location
 AND                             cd.date = cv.date
